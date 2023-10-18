@@ -1,6 +1,7 @@
 import { Context } from "telegraf";
 import { string_store } from "../utils/string_store";
 import { gpt_correct } from "../../gpt/philo_correct";
+import * as sqs from '../../utils/sqs';
 
 interface ContextSession extends Context {
     [key: string]: any
@@ -23,16 +24,21 @@ export const philo_listener = async (ctx: any) => {
 
             await ctx.reply('Mmm, laisses moi réfléchir...');
             await ctx.sendChatAction('typing');
+                
+            const chat_id = ctx.message.chat.id;
 
-            const corection = await gpt_correct(message)
+            const sqs_message = sqs.generate_sqs_message('philo_queue', { message, chat_id });
+            await sqs.send(process.env.PHILO_QUEUE!, sqs_message);
 
-            // const gpt_history = ctx.session.gpt_history || [];
+            // const corection = await gpt_correct(message)
 
-            console.log('corection', corection);
+            // // const gpt_history = ctx.session.gpt_history || [];
 
-            await ctx.sendMessage(corection, {
-                parse_mode: 'Markdown'
-            });
+            // console.log('corection', corection);
+
+            // await ctx.sendMessage(corection, {
+            //     parse_mode: 'Markdown'
+            // });
             break;
         default:
             break

@@ -6,7 +6,6 @@ provider:
   name: aws
   stage: develop
   runtime: nodejs18.x
-  profile: personal
   iam:
     role:
       statements:

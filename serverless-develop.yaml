@@ -7,7 +7,6 @@ provider:
   name: aws
   stage: develop
   runtime: nodejs18.x
-  profile: personal
   iam:
     role:
       statements:
@@ -37,6 +36,27 @@ functions:
       - httpApi: '*'
     layers:
       - ${env:LAMBDA_HANDLER_LAYER_ARN}
+
+  philo_queue:
+    handler: src/monitors/philo_queue.philo_queue
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - PhiloQueue
+              - Arn
+          batchSize: 1
+    timeout: 600
+    layers:
+      - ${env:LAMBDA_HANDLER_LAYER_ARN}
+
+resources:
+  Resources:
+    PhiloQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: philo-queue_${opt:stage, self:provider.stage}
+        VisibilityTimeout: 600
 
 plugins:
   - serverless-plugin-typescript

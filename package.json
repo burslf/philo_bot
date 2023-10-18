@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=local nodemon src/server/server.ts",
-    "deploy-dev": "serverless deploy -c ./serverless-develop.yaml",
+    "deploy-dev": "serverless deploy -c ./serverless-develop.yaml --aws-profile personal",
     "deploy-layers": "serverless deploy -c ./serverless-layers.yaml --aws-profile personal",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
