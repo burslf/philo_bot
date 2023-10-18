@@ -1,0 +1,32 @@
+app: philo-bot
+service: layers
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  stage: develop
+  runtime: nodejs18.x
+  profile: personal
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'lambda:InvokeFunction'
+            - 'lambda:UpdateFunctionConfiguration'
+            - 'lambda:GetFunction'
+            - 'lambda:listAliases'
+            - 'lambda:listVersionsByFunction'
+            - 'lambda:deleteFunction'
+            - 'lambda:listLayerVersions'
+            - 'lambda:GetLayerVersion'
+            - 'lambda:deleteLayerVersion'
+          Resource:
+            - '*'
+
+layers:
+  philo-layers:
+    path: .lambda-layers/layers
+    compatibleRuntimes:
+      - nodejs18.x
+    description: "Dependencies for philo serverless backend"

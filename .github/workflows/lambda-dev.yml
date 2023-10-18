@@ -1,0 +1,39 @@
+name: Deploy to serverless and Lambda
+
+on:
+  push:
+    branches:
+      - "develop"
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - name: "Create env file"
+        run: |
+          echo '${{ secrets.ENV_FILE_DEV }}' > .env
+      - name: serverless deploy
+        uses: serverless/github-action@v3.1
+        with:
+          args: deploy --config serverless-develop.yaml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SLS_INTERACTIVE_SETUP_ENABLE: 1
+      - name: Make Telegram API Call
+        run: |
+          curl --request POST \
+            --url https://api.telegram.org/bot${{ secrets.TG_TOKEN_DEV }}/setWebhook \
+            --header 'content-type: application/json' \
+            --data '{"url": ""}'

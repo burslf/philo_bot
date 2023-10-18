@@ -1,0 +1,63 @@
+app: philo-bot
+service: server
+useDotenv: true
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  stage: develop
+  runtime: nodejs18.x
+  profile: personal
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'lambda:InvokeFunction'
+            - 'lambda:UpdateFunctionConfiguration'
+            - 'lambda:GetFunction'
+            - 'lambda:listAliases'
+            - 'lambda:listVersionsByFunction'
+            - 'lambda:deleteFunction'
+            - 'lambda:listLayerVersions'
+            - 'lambda:GetLayerVersion'
+            - 'lambda:deleteLayerVersion'
+          Resource:
+            - '*'
+        - Effect: 'Allow'
+          Action:
+            - 'sqs:*'
+          Resource:
+            - '*'
+
+functions:
+  philo_server:
+    handler: src/server/server.server
+    events:
+      - httpApi: '*'
+    layers:
+      - ${env:LAMBDA_HANDLER_LAYER_ARN}
+
+resources: # CloudFormation template syntax
+  Resources:
+    News8200EC2Instance:
+      Type: AWS::EC2::Instance
+      Properties: 
+        ImageId: ami-0261755bbcb8c4a84
+        KeyName: 8200-news # This needs to be created manually. CloudFormation does not allow it
+        InstanceType: t2.micro
+        SecurityGroupIds:
+          - sg-08323913e064e7948
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
+
+package:
+  patterns:
+    - '!.env/**'
+    - '!node_modules/**'
+
+custom:
+  serverlessPluginTypescript:
+    tsConfigFileLocation: './tsconfig.json'
