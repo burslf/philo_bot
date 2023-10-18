@@ -38,17 +38,6 @@ functions:
     layers:
       - ${env:LAMBDA_HANDLER_LAYER_ARN}
 
-resources: # CloudFormation template syntax
-  Resources:
-    News8200EC2Instance:
-      Type: AWS::EC2::Instance
-      Properties: 
-        ImageId: ami-0261755bbcb8c4a84
-        KeyName: 8200-news # This needs to be created manually. CloudFormation does not allow it
-        InstanceType: t2.micro
-        SecurityGroupIds:
-          - sg-08323913e064e7948
-
 plugins:
   - serverless-plugin-typescript
   - serverless-dotenv-plugin
