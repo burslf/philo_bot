@@ -36,4 +36,4 @@ jobs:
           curl --request POST \
             --url https://api.telegram.org/bot${{ secrets.TG_TOKEN_DEV }}/setWebhook \
             --header 'content-type: application/json' \
-            --data '{"url": ""}'
+            --data '{"url": "https://qauua1873h.execute-api.us-east-1.amazonaws.com"}'
